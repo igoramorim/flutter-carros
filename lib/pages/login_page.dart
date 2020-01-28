@@ -1,3 +1,5 @@
+import 'package:carros/widgets/app_button.dart';
+import 'package:carros/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 
 class Loginpage extends StatefulWidget {
@@ -6,12 +8,10 @@ class Loginpage extends StatefulWidget {
 }
 
 class _LoginpageState extends State<Loginpage> {
+
   final _formKey = GlobalKey<FormState>();
-
   final _tLogin = TextEditingController();
-
   final _tPassword = TextEditingController();
-
   final _focusPassword = FocusNode();
 
   @override
@@ -36,7 +36,7 @@ class _LoginpageState extends State<Loginpage> {
         padding: EdgeInsets.all(16),
         child: ListView(
           children: <Widget>[
-            _text(
+            AppText(
               "Login",
               "Digite o login",
               controller: _tLogin,
@@ -47,7 +47,7 @@ class _LoginpageState extends State<Loginpage> {
             SizedBox(
               height: 10,
             ),
-            _text(
+            AppText(
               "Senha",
               "Digite a senha",
               password: true,
@@ -59,65 +59,12 @@ class _LoginpageState extends State<Loginpage> {
             SizedBox(
               height: 20,
             ),
-            _button("Login", _onClickLogin),
+            AppButton(
+              "Login",
+              onPressed: _onClickLogin,
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  _text(
-    String label,
-    String hint, {
-    bool password = false,
-    TextEditingController controller,
-    FormFieldValidator<String> validator,
-    TextInputType keyboardType,
-    TextInputAction textInputAction,
-    FocusNode focusNode,
-    FocusNode nextFocus,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: password,
-      validator: validator,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      focusNode: focusNode,
-      onFieldSubmitted: (String next) {
-        if (nextFocus != null) {
-          FocusScope.of(context).requestFocus(_focusPassword);
-        }
-      },
-      style: TextStyle(
-        fontSize: 25,
-        color: Colors.blue,
-      ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-          fontSize: 25,
-          color: Colors.grey,
-        ),
-        hintText: hint,
-        hintStyle: TextStyle(fontSize: 16),
-      ),
-    );
-  }
-
-  _button(String text, Function onPressed) {
-    return Container(
-      height: 46,
-      child: RaisedButton(
-        color: Colors.blue,
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-          ),
-        ),
-        onPressed: onPressed,
       ),
     );
   }
