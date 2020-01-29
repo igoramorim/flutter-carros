@@ -14,11 +14,12 @@ class Loginpage extends StatefulWidget {
 }
 
 class _LoginpageState extends State<Loginpage> {
-
   final _formKey = GlobalKey<FormState>();
   final _tLogin = TextEditingController();
   final _tPassword = TextEditingController();
   final _focusPassword = FocusNode();
+
+  bool _showProgress = false;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _LoginpageState extends State<Loginpage> {
             AppButton(
               "Login",
               onPressed: _onClickLogin,
+              showProgress: _showProgress,
             ),
           ],
         ),
@@ -85,16 +87,23 @@ class _LoginpageState extends State<Loginpage> {
 
     print("Login: $login, Senha: $password");
 
+    setState(() {
+      _showProgress = true;
+    });
+
     ApiResponse response = await LoginApi.login(login, password);
 
     if (response.ok) {
       User user = response.result;
       print("login sucesso: $user");
-      push(context, Homepage());
+      push(context, Homepage(), replace: true);
     } else {
-      alert(context ,response.msg);
+      alert(context, response.msg);
     }
 
+    setState(() {
+      _showProgress = false;
+    });
   }
 
   String _validateLogin(String text) {
