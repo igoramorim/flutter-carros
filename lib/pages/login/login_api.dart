@@ -28,7 +28,8 @@ class LoginApi {
       Map mapResponse = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        final user = User(mapResponse);
+        final user = User.fromJson(mapResponse);
+        user.save();
         return ApiResponse.ok(user);
       }
 
