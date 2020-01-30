@@ -1,5 +1,7 @@
 import 'package:carros/pages/car/car.dart';
 import 'package:carros/pages/car/car_api.dart';
+import 'package:carros/pages/car/car_page.dart';
+import 'package:carros/utils/nav.dart';
 import 'package:flutter/material.dart';
 
 class CarListView extends StatefulWidget {
@@ -12,31 +14,34 @@ class CarListView extends StatefulWidget {
 }
 
 class _CarListViewState extends State<CarListView> with AutomaticKeepAliveClientMixin<CarListView> {
+  
+  List<Car> cars;
+  
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future<List<Car>> future = CarApi.getCars(widget.type);
+    future.then((List<Car> cars) {
+      setState(() {
+        this.cars = cars;
+      });
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _body();
-  }
 
-  _body() {
-    Future<List<Car>> future = CarApi.getCars(widget.type);
+    if (cars == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-    return FutureBuilder(
-      future: future,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        List<Car> cars = snapshot.data;
-        return _listView(cars);
-      },
-    );
+    return _listView(cars);
   }
 
   Container _listView(List<Car> cars) {
@@ -72,7 +77,7 @@ class _CarListViewState extends State<CarListView> with AutomaticKeepAliveClient
                     children: <Widget>[
                       FlatButton(
                         child: const Text('DETALHES'),
-                        onPressed: () {/* ... */},
+                        onPressed: () => _onClickCar(c),
                       ),
                       FlatButton(
                         child: const Text('SHARE'),
@@ -88,4 +93,9 @@ class _CarListViewState extends State<CarListView> with AutomaticKeepAliveClient
       ),
     );
   }
+
+  _onClickCar(Car c) {
+    push(context, CarPage(c));
+  }
+
 }
