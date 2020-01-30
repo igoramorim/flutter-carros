@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carros/pages/api_response.dart';
 import 'package:carros/pages/car/home_page.dart';
 import 'package:carros/pages/login/login_api.dart';
@@ -18,8 +20,7 @@ class _LoginpageState extends State<Loginpage> {
   final _tLogin = TextEditingController();
   final _tPassword = TextEditingController();
   final _focusPassword = FocusNode();
-
-  bool _showProgress = false;
+  final _streamController = StreamController<bool>();
 
   @override
   void initState() {
@@ -73,10 +74,16 @@ class _LoginpageState extends State<Loginpage> {
             SizedBox(
               height: 20,
             ),
-            AppButton(
-              "Login",
-              onPressed: _onClickLogin,
-              showProgress: _showProgress,
+            StreamBuilder<bool>(
+              stream: _streamController.stream,
+              initialData: false,
+              builder: (context, snapshot) {
+                return AppButton(
+                  "Login",
+                  onPressed: _onClickLogin,
+                  showProgress: snapshot.data,
+                );
+              }
             ),
           ],
         ),
@@ -94,9 +101,7 @@ class _LoginpageState extends State<Loginpage> {
 
     print("Login: $login, Senha: $password");
 
-    setState(() {
-      _showProgress = true;
-    });
+    _streamController.add(true);
 
     ApiResponse response = await LoginApi.login(login, password);
 
@@ -108,9 +113,7 @@ class _LoginpageState extends State<Loginpage> {
       alert(context, response.msg);
     }
 
-    setState(() {
-      _showProgress = false;
-    });
+    _streamController.add(false);
   }
 
   String _validateLogin(String text) {
@@ -126,4 +129,11 @@ class _LoginpageState extends State<Loginpage> {
     }
     return null;
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _streamController.close();
+  }
+
 }
