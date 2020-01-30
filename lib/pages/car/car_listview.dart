@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carros/pages/car/car.dart';
 import 'package:carros/pages/car/car_api.dart';
 import 'package:carros/pages/car/car_page.dart';
@@ -5,7 +7,6 @@ import 'package:carros/utils/nav.dart';
 import 'package:flutter/material.dart';
 
 class CarListView extends StatefulWidget {
-  
   String type;
   CarListView(this.type);
 
@@ -13,35 +14,55 @@ class CarListView extends StatefulWidget {
   _CarListViewState createState() => _CarListViewState();
 }
 
-class _CarListViewState extends State<CarListView> with AutomaticKeepAliveClientMixin<CarListView> {
-  
+class _CarListViewState extends State<CarListView>
+    with AutomaticKeepAliveClientMixin<CarListView> {
   List<Car> cars;
-  
+
+  final _streamController = StreamController<List<Car>>();
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    Future<List<Car>> future = CarApi.getCars(widget.type);
-    future.then((List<Car> cars) {
-      setState(() {
-        this.cars = cars;
-      });
-    });
+    _loadCars();
   }
-  
+
+  _loadCars() async {
+    List<Car> cars = await CarApi.getCars(widget.type);
+    _streamController.add(cars);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    if (cars == null) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+    return StreamBuilder(
+      stream: _streamController.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              "Não foi possível buscar os carros",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 22,
+              ),
+            ),
+          );
+        }
 
-    return _listView(cars);
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        List<Car> cars = snapshot.data;
+        return _listView(cars);
+      },
+    );
   }
 
   Container _listView(List<Car> cars) {
@@ -59,7 +80,8 @@ class _CarListViewState extends State<CarListView> with AutomaticKeepAliveClient
                 children: <Widget>[
                   Center(
                     child: Image.network(
-                      c.urlFoto ?? "http://www.livroandroid.com.br/livro/carros/esportivos/MERCEDES_BENZ_AMG.png",
+                      c.urlFoto ??
+                          "http://www.livroandroid.com.br/livro/carros/esportivos/MERCEDES_BENZ_AMG.png",
                       width: 250,
                     ),
                   ),
@@ -97,5 +119,4 @@ class _CarListViewState extends State<CarListView> with AutomaticKeepAliveClient
   _onClickCar(Car c) {
     push(context, CarPage(c));
   }
-
 }
