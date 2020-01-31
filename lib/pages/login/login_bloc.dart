@@ -1,23 +1,23 @@
 import 'dart:async';
 
 import 'package:carros/pages/api_response.dart';
+import 'package:carros/pages/car/simple_bloc.dart';
 import 'package:carros/pages/login/login_api.dart';
 import 'package:carros/pages/user.dart';
 
 class LoginBloc {
 
-  final _streamController = StreamController<bool>();
-  Stream<bool> get stream => _streamController.stream;
+  final buttonBloc = SimpleBloc<bool>();
 
   Future<ApiResponse<User>> login(String login, String password) async {
-    _streamController.add(true);
+    buttonBloc.add(true);
     ApiResponse response = await LoginApi.login(login, password);
-    _streamController.add(false);
+    buttonBloc.add(false);
     return response;
   }
 
   void dispose() {
-    _streamController.close();
+    buttonBloc.dispose();
   }
 
 }
