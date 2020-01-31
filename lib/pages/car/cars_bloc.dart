@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:carros/pages/car/car.dart';
 import 'package:carros/pages/car/car_api.dart';
 
-class CarsBlock {
+class CarsBloc {
 
   final _streamController = StreamController<List<Car>>();
   Stream<List<Car>> get stream => _streamController.stream;

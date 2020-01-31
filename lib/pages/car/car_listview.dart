@@ -22,7 +22,7 @@ class _CarListViewState extends State<CarListView>
 
   String get type => widget.type;
 
-  final _bloc = CarsBlock();
+  final _bloc = CarsBloc();
 
   @override
   bool get wantKeepAlive => true;

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:carros/pages/api_response.dart';
 import 'package:carros/pages/car/home_page.dart';
-import 'package:carros/pages/login/login_api.dart';
+import 'package:carros/pages/login/login_bloc.dart';
 import 'package:carros/pages/user.dart';
 import 'package:carros/utils/alert.dart';
 import 'package:carros/utils/nav.dart';
@@ -20,7 +20,7 @@ class _LoginpageState extends State<Loginpage> {
   final _tLogin = TextEditingController();
   final _tPassword = TextEditingController();
   final _focusPassword = FocusNode();
-  final _streamController = StreamController<bool>();
+  final _bloc = LoginBloc();
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _LoginpageState extends State<Loginpage> {
               height: 20,
             ),
             StreamBuilder<bool>(
-              stream: _streamController.stream,
+              stream: _bloc.stream,
               initialData: false,
               builder: (context, snapshot) {
                 return AppButton(
@@ -101,9 +101,7 @@ class _LoginpageState extends State<Loginpage> {
 
     print("Login: $login, Senha: $password");
 
-    _streamController.add(true);
-
-    ApiResponse response = await LoginApi.login(login, password);
+    ApiResponse response = await _bloc.login(login, password);
 
     if (response.ok) {
       User user = response.result;
@@ -113,7 +111,6 @@ class _LoginpageState extends State<Loginpage> {
       alert(context, response.msg);
     }
 
-    _streamController.add(false);
   }
 
   String _validateLogin(String text) {
@@ -133,7 +130,7 @@ class _LoginpageState extends State<Loginpage> {
   @override
   void dispose() {
     super.dispose();
-    _streamController.close();
+    _bloc.dispose();
   }
 
 }
