@@ -9,9 +9,13 @@ class CarsBloc {
   Stream<List<Car>> get stream => _streamController.stream;
 
   fetch(String type) async {
-    List<Car> cars = await CarApi.getCars(type);
-    if (!_streamController.isClosed) {
-    _streamController.add(cars);
+    try {
+      List<Car> cars = await CarApi.getCars(type);
+      if (!_streamController.isClosed) {
+        _streamController.add(cars);
+      }
+    } catch(e) {
+      _streamController.addError(e);
     }
   }
 
