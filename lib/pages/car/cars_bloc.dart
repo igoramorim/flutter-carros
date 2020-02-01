@@ -13,6 +13,4 @@ class CarsBloc extends SimpleBloc<List<Car>> {
     }
   }
 
-  
-
 }
