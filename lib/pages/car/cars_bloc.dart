@@ -4,10 +4,11 @@ import 'package:carros/pages/car/simple_bloc.dart';
 
 class CarsBloc extends SimpleBloc<List<Car>> {
 
-  fetch(String type) async {
+  Future<List<Car>> fetch(String type) async {
     try {
       List<Car> cars = await CarApi.getCars(type);
       add(cars);
+      return cars;
     } catch(e) {
       addError(e);
     }
